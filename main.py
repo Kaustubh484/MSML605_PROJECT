@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from model import FraudDetectionModel
 
 app = FastAPI()
-
+print("Loading model...")
 model = FraudDetectionModel()
 model.load_state_dict(torch.load("fraud_model.pth", map_location=torch.device("cpu")))
 model.eval()
