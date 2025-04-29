@@ -1,14 +1,17 @@
 import torch
 import argparse
 import pandas as pd
-
+import os
 from clearml import Task
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 
 from model import FraudDetectionModel, CustomDataset
 from hyperparameters import num_epochs, batch_size, learning_rate
-
+# Set up ClearML connection from environment variables
+os.environ['CLEARML_API_ACCESS_KEY'] = os.getenv('CLEARML_API_ACCESS_KEY', '')
+os.environ['CLEARML_API_SECRET_KEY'] = os.getenv('CLEARML_API_SECRET_KEY', '')
+os.environ['CLEARML_API_HOST'] = os.getenv('CLEARML_API_HOST', 'https://app.clear.ml') 
 
 task = Task.init(
     project_name="Fraud Detection",  # Name of your project in ClearML UI
