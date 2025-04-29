@@ -88,16 +88,15 @@ if drift_detected:
     }
 
     # Create a dummy commit file
-with open("trigger.txt", "w") as f:
-    f.write("trigger deployment\n")
-
-    subprocess.run(["git", "config", "--global", "user.email", "bot@example.com"])
-    subprocess.run(["git", "config", "--global", "user.name", "GitHub Actions Bot"])
-    subprocess.run(["git", "add", "trigger.txt"])
-    subprocess.run(["git", "commit", "-m", "Trigger ECS deployment"])
-    subprocess.run(["git", "push", f"https://x-access-token:{token}@github.com/{repo}.git", branch])
-
-    print("✅ Redeployment triggered.")
-
+    with open("trigger.txt", "w") as f:
+        f.write("trigger deployment\n")
+    
+        subprocess.run(["git", "config", "--global", "user.email", "bot@example.com"])
+        subprocess.run(["git", "config", "--global", "user.name", "GitHub Actions Bot"])
+        subprocess.run(["git", "add", "trigger.txt"])
+        subprocess.run(["git", "commit", "-m", "Trigger ECS deployment"])
+        subprocess.run(["git", "push", f"https://x-access-token:{token}@github.com/{repo}.git", branch])
+    
+        print("✅ Redeployment triggered.")
 else:
     print("✅ No drift detected. No retraining needed.")
