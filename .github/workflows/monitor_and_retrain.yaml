@@ -1,0 +1,61 @@
+name: Monitor and Retrain Fraud Detection Model
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Every day at midnight UTC
+  workflow_dispatch:     # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  monitor_and_retrain:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      AWS_REGION: us-east-1
+      AWS_BUCKET_NAME: fraud-detection-kaustubh  # 🔥 Change to your actual S3 bucket
+      BASELINE_KEY: creditcard_2023.csv
+      NEW_BATCH_KEY: strongly_drifted_batch.csv
+      MODEL_UPLOAD_PREFIX: models/  # where to store models inside the bucket
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas numpy torch clearml boto3 scikit-learn evidently
+
+      - name: Download Baseline and New Batch Data from S3
+        run: |
+          mkdir -p data
+          aws s3 cp s3://${{ env.AWS_BUCKET_NAME }}/${{ env.BASELINE_KEY }} data/baseline.csv
+          aws s3 cp s3://${{ env.AWS_BUCKET_NAME }}/${{ env.NEW_BATCH_KEY }} data/new_batch.csv
+
+      - name: Run Drift Monitor and Retrain
+        run: |
+          python monitor_and_retrain.py --baseline_path data/baseline.csv --new_batch_path data/new_batch.csv --bucket_name ${{ env.AWS_BUCKET_NAME }} --model_prefix ${{ env.MODEL_UPLOAD_PREFIX }}
+
+      - name: Upload Retrained Model to S3 (if created)
+        if: success()
+        run: |
+          if [ -f fraud_model.pth ]; then
+            TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+            aws s3 cp fraud_model.pth s3://${{ env.AWS_BUCKET_NAME }}/${{ env.MODEL_UPLOAD_PREFIX }}fraud_model_${TIMESTAMP}.pth
+            echo "✅ Model uploaded as fraud_model_${TIMESTAMP}.pth"
+          else
+            echo "ℹ️ No new model generated (no drift detected)."
+          fi

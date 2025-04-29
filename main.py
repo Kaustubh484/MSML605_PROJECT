@@ -1,8 +1,9 @@
 import torch
 import numpy as np
-
+from clearml import Task
 from fastapi import FastAPI
 from model import FraudDetectionModel
+
 
 app = FastAPI()
 print("Loading model...")
