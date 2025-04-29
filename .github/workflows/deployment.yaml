@@ -41,3 +41,14 @@ jobs:
             --cluster ${{ secrets.ECS_CLUSTER }} \
             --service ${{ secrets.ECS_SERVICE }} \
             --force-new-deployment
+
+      - name: Cleanup trigger file
+   
+        run: |
+          git config --global user.email "bot@example.com"
+          git config --global user.name "GitHub Actions Bot"
+          git pull origin main
+          git rm trigger.txt
+          git commit -m "Cleanup trigger file [skip ci]" || echo "Nothing to cleanup"
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:main
+
