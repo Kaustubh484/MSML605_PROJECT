@@ -3,6 +3,7 @@ import boto3
 import os
 import subprocess
 import argparse
+import requests
 from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset
 
@@ -77,12 +78,24 @@ if drift_detected:
     # Trigger Deployment
     # -------------------------
     print("🚀 Triggering redeployment via GitHub Actions...")
+    repo = os.getenv("GITHUB_REPOSITORY")
+    token = os.getenv("GITHUB_TOKEN")
+    branch = "main"
+    
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json"
+    }
+
+    # Create a dummy commit file
+with open("trigger.txt", "w") as f:
+    f.write("trigger deployment\n")
 
     subprocess.run(["git", "config", "--global", "user.email", "bot@example.com"])
     subprocess.run(["git", "config", "--global", "user.name", "GitHub Actions Bot"])
-    subprocess.run(["git", "remote", "set-url", "origin", f"https://x-access-token:{os.environ['GITHUB_TOKEN']}@github.com/Kaustubh484/MSML605_PROJECT.git"])
-    subprocess.run(["git", "commit", "--allow-empty", "-m", "Trigger redeployment after retraining"])
-    subprocess.run(["git", "push"])
+    subprocess.run(["git", "add", "trigger.txt"])
+    subprocess.run(["git", "commit", "-m", "Trigger ECS deployment"])
+    subprocess.run(["git", "push", f"https://x-access-token:{token}@github.com/{repo}.git", branch]
 
     print("✅ Redeployment triggered.")
 
