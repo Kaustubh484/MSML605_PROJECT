@@ -12,6 +12,9 @@ jobs:
       contents: write
 
     env:
+      CLEARML_API_ACCESS_KEY: ${{ secrets.CLEARML_API_ACCESS_KEY }}
+      CLEARML_API_SECRET_KEY: ${{ secrets.CLEARML_API_SECRET_KEY }}
+      CLEARML_API_HOST: ${{ secrets.CLEARML_API_HOST }}
       AWS_REGION: us-east-1
       AWS_BUCKET_NAME: fraud-detection-kaustubh  # 🔥 Change to your actual S3 bucket
       BASELINE_KEY: creditcard_2023.csv
