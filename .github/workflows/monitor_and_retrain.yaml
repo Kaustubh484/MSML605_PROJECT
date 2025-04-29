@@ -37,7 +37,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install pandas numpy torch clearml boto3 scikit-learn evidently==0.3.2
+          pip install pandas numpy==1.24.4 torch clearml boto3 scikit-learn evidently==0.3.2
 
       - name: Download Baseline and New Batch Data from S3
         run: |
