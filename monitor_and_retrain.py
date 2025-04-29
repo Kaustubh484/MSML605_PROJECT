@@ -55,7 +55,7 @@ if drift_detected:
     print(f"✅ Combined dataset saved: {combined_path}")
 
     # Call training script
-    subprocess.run(["python", "train_model.py", "--dataset", combined_path], check=True)
+    subprocess.run(["python", "train.py", "--dataset", combined_path], check=True)
     print("✅ Model retrained.")
 
     # -------------------------
