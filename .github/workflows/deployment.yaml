@@ -2,8 +2,10 @@ name: Deploy to ECS
 
 on:
   push:
+    paths:
+        - trigger.txt
     branches:
-      - main
+          - main
 
 jobs:
   deploy:
