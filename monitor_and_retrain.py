@@ -95,7 +95,7 @@ with open("trigger.txt", "w") as f:
     subprocess.run(["git", "config", "--global", "user.name", "GitHub Actions Bot"])
     subprocess.run(["git", "add", "trigger.txt"])
     subprocess.run(["git", "commit", "-m", "Trigger ECS deployment"])
-    subprocess.run(["git", "push", f"https://x-access-token:{token}@github.com/{repo}.git", branch]
+    subprocess.run(["git", "push", f"https://x-access-token:{token}@github.com/{repo}.git", branch])
 
     print("✅ Redeployment triggered.")
 
